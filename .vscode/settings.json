@@ -1,3 +1,10 @@
 {
-    "python.envFile": ".env"
+    "python.envFile": ".env",
+    "python.testing.pytestArgs": [
+        ".",
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "pythonTestExplorer.testFramework": "pytest"
 }
