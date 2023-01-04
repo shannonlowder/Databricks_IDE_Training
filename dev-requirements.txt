@@ -4,3 +4,4 @@ pylint==2.15.*
 pytest==7.2.*
 setuptools==65.5.*
 wheel==0.37.*
+ipykernel

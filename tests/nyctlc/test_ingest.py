@@ -1,24 +1,18 @@
 """
 Test the ingest module
-
-Classes:
-    TestIngest: This class contains the unit tests for the ingest module.
-
 """
 #import pytest
-from nyctlc import ingest #pylint: disable=import-error
-
+#from nyctlc import ingest #pylint: disable=import-error
+from nyctlc import ingest
 
 class TestIngest:
     """
     This class contains the unit tests for the ingest module.
 
-
     Methods:
         test_download_source: This method tests the download_source method.
 
     """
-
     def test_download_source(self):
         """
         This method tests the download_source method.

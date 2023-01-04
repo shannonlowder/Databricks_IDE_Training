@@ -8,7 +8,13 @@ Classes:
 """
 import requests
 from pyspark.sql import SparkSession
-import dbutils.fs.dbfs_utils as dbfs #pylint: disable=import-error
+# this is the only way I could get dbutils to work locally
+try:
+    if dbutils:
+        print("dbutils is available")
+except NameError:
+    print("dbutils is not available, use wrapper")
+    import dbutils #pylint: disable=import-outside-toplevel
 
 class Ingest:
     """
@@ -34,6 +40,7 @@ class Ingest:
         Parameters:
 
         """
+
 
     # may have to have the users upload the file to dbfs (standing in for ADF)
     # it would be nice to get dbutils to work locally, without connecting to a cluster
@@ -65,8 +72,9 @@ class Ingest:
                 return False
 
         #move the file from tmp to destination
-        #dbutils = pyspark.dbutils.DBUtils(self._spark)
-        #dbutils.fs.mv(self.tmp_folder + "/" +file_name, destination_folder + "/" +file_name)
-        print(destination_folder + "/" +file_name)
-        return dbfs.mv(self.tmp_folder + "/" +file_name, destination_folder + "/" +file_name)
 
+
+        print(destination_folder + "/" +file_name)
+
+        dbutils.fs.mv(self.tmp_folder + "/" +file_name, destination_folder + "/" +file_name)
+        return True
