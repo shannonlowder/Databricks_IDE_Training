@@ -6,32 +6,28 @@ Classes:
     Commission website and store it in delta format.
 
 """
-import requests
+from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
-# this is the only way I could get dbutils to work locally
-try:
-    if dbutils:
-        print("dbutils is available")
-except NameError:
-    print("dbutils is not available, use wrapper")
-    import dbutils #pylint: disable=import-outside-toplevel
+
 
 class Ingest:
     """
     This class contains the code to ingest the data from the NYC Taxi & Limousine Commission
     website.
+
     Attributes:
-        tmp_folder (str): path to your tmp (/tmp or c:\temp).
+        _builder (SparkSession.builder):  This is the SparkSession builder.
+        _spark (SparkSession): This is the SparkSession.
 
     Methods:
 
     """
 
-    #_builder = SparkSession.builder.appName("nyctlc.ingest")
+    _builder = SparkSession.builder.appName("nyctlc.Ingest") \
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
 
-    _spark = SparkSession.builder.getOrCreate()
-
-    tmp_folder = "/tmp"
+    _spark = configure_spark_with_delta_pip(_builder).getOrCreate()
 
     def __init__(self):
         """
@@ -41,40 +37,20 @@ class Ingest:
 
         """
 
-
-    # may have to have the users upload the file to dbfs (standing in for ADF)
-    # it would be nice to get dbutils to work locally, without connecting to a cluster
-    def download_source(self, url, destination_folder, timeout=60):
+    def load_parquet_to_delta(self, source_folder, destination_folder) -> bool:
         """
-        This method downloads the source data from the web. Databricks doesn't like direct download
-        to target. It likes download to tmp, then move to destination_folder.
+        This method creates the silver delta table.
 
-        Parameters:
-            url (str): The URL to download the data from.
-            destination_folder (str): The folder to download the data to.
-            timeout (int): The number of seconds to wait before timing out the request.
-
-        returns:
-            True if the download was successful, False otherwise.
+        Parameters:`
+            source_folder (str): path to the source folder.
+            destination_folder (str): path to the destination folder.
+        Returns:
+            bool: True if successful, False if not.
         """
-
-        #get the file name
-        file_name = url.split("/")[-1]
-        #get the file as a stream
-        with requests.get(url, stream=True, timeout= timeout) as source:
-            try:
-                with open(self.tmp_folder + "/" +file_name, "wb") as target:
-                    for chunk in source.iter_content(chunk_size=8192):
-                        if chunk:
-                            target.write(chunk)
-            except OSError as write_error:
-                print(write_error)
-                return False
-
-        #move the file from tmp to destination
-
-
-        print(destination_folder + "/" +file_name)
-
-        dbutils.fs.mv(self.tmp_folder + "/" +file_name, destination_folder + "/" +file_name)
-        return True
+        try:
+            source_df = self._spark.read.parquet(source_folder)
+            source_df.write.format("delta").mode("append").save(destination_folder)
+            return True
+        except BaseException as e: #pylint: disable=broad-except invalid-name
+            print(e)
+            return False

@@ -1,2 +1,6 @@
-# pylint: skip-file
-# do not delete this file, if you do, the tests will not run
+"""
+be sure to import all nvctlc modules here
+"""
+from nyctlc import ingest
+
+__all__ = ['ingest']

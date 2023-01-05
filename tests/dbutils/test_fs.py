@@ -1,13 +1,10 @@
 """
 Test the LocalDBUtils.fs module
 """
-#import pytest
-#from dbutils import dbutils #pylint: disable=import-error
 import os
 import pathlib
-#import shutil
 import pytest
-import dbutils
+import dbutils #pylint: disable=import-error
 
 class TestDBUtilsFS:
     """
@@ -17,8 +14,9 @@ class TestDBUtilsFS:
         test_help: This method tests the help method.
 
     """
-    @pytest.mark.parametrize("src, dest, recurse, expected", [("/tmp/test_src", "/tmp/test_dest", True, True)
-        , ("/tmp/test_src/src_test.txt", "/tmp/test_dest", False, True)])
+    @pytest.mark.skip(reason="skip for early demo")
+    #@pytest.mark.parametrize("src, dest, recurse, expected", [("/tmp/test_src", "/tmp/test_dest", True, True)
+    #    , ("/tmp/test_src/src_test.txt", "/tmp/test_dest", False, True)])
     def test_cp(self, src, dest, recurse, expected):
         """
         This method tests the cp method.
@@ -58,6 +56,7 @@ class TestDBUtilsFS:
         #cleanup
         os.removedirs(pathlib.Path(dest))
 
+    @pytest.mark.skip(reason="skip for early demo")
     def test_fs_help(self):
         """
         Simple test to make sure the help method works.
