@@ -1,5 +1,5 @@
 """
-be sure to import all nvctlc modules here
+Import helper, list all nyctlc modules here as they're developed.
 """
 from nyctlc import ingest
 

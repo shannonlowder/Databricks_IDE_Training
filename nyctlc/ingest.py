@@ -9,7 +9,6 @@ Classes:
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
-
 class Ingest:
     """
     This class contains the code to ingest the data from the NYC Taxi & Limousine Commission
@@ -37,18 +36,18 @@ class Ingest:
 
         """
 
-    def load_parquet_to_delta(self, source_folder, destination_folder) -> bool:
+    def load_parquet_to_delta(self, source_path, destination_folder) -> bool:
         """
         This method creates the silver delta table.
 
         Parameters:`
-            source_folder (str): path to the source folder.
+            source_path (str): path to the source file or folder.
             destination_folder (str): path to the destination folder.
         Returns:
             bool: True if successful, False if not.
         """
         try:
-            source_df = self._spark.read.parquet(source_folder)
+            source_df = self._spark.read.parquet(source_path)
             source_df.write.format("delta").mode("append").save(destination_folder)
             return True
         except BaseException as e: #pylint: disable=broad-except invalid-name
