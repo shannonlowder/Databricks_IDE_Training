@@ -31,9 +31,6 @@ class Ingest:
     def __init__(self):
         """
         This method initializes the class. Not in use at this time.
-
-        Parameters:
-
         """
 
     def load_parquet_to_delta(self, source_path, destination_folder) -> bool:

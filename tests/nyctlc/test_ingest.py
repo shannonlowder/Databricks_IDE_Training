@@ -1,11 +1,11 @@
 """
 Test the ingest module
 """
-import pytest
 import shutil
+import pytest
 from delta import configure_spark_with_delta_pip
-from nyctlc import ingest #pylint: disable=import-error
 from pyspark.sql import SparkSession
+from nyctlc import ingest #pylint: disable=import-error
 
 class TestIngest:
     """
@@ -20,12 +20,6 @@ class TestIngest:
 
     """
 
-    _builder = SparkSession.builder.appName("nyctlc.TestIngest") \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-
-    _spark = configure_spark_with_delta_pip(_builder).getOrCreate()
-
     @pytest.mark.parametrize("source_folder, destination_folder, expected",
         [
             ("/Users/slowder/Repositories/Databricks/LocalStorage/bronze/fhv",
@@ -38,12 +32,20 @@ class TestIngest:
         Parameters:
 
         """
-        #arrange
-        ingest_instance = ingest.Ingest()
+        #arrange, remove the destination folder if it exists.
+        builder = SparkSession.builder.appName("nyctlc.TestIngest") \
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+
+        spark = configure_spark_with_delta_pip(builder).getOrCreate()
+
+        if shutil.os.path.exists(destination_folder):
+            shutil.rmtree(destination_folder)
 
         #act
+        ingest_instance = ingest.Ingest()
         ingest_instance.load_parquet_to_delta(source_folder, destination_folder)
-        actual = self._spark.read.format("delta").load(destination_folder).count()
+        actual = spark.read.format("delta").load(destination_folder).count()
 
         #assert
         assert actual == expected
