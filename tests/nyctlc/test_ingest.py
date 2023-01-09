@@ -5,7 +5,7 @@ import shutil
 import pytest
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
-from nyctlc import ingest #pylint: disable=import-error
+from nyctlc import ingest
 
 class TestIngest:
     """
